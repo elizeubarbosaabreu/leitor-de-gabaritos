@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Leitor de Gabaritos</string>
+    <string name="title_gabarito">Gabarito oficial</string>
+    <string name="title_scan">Ler prova</string>
+    <string name="title_result">Resultado</string>
+</resources>
