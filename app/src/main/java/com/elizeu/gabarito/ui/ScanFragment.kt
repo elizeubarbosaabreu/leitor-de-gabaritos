@@ -71,6 +71,11 @@ class ScanFragment : Fragment() {
         }
         b.btnGallery.setOnClickListener { pickImage.launch("image/*") }
         b.btnProcessar.setOnClickListener { processar() }
+        b.inputValor.setText(
+            GabaritoStore.loadValor(requireContext())
+                .toString()
+                .replace('.', ',')
+        )
     }
 
     private fun onUriReady(uri: Uri) {
@@ -117,6 +122,16 @@ class ScanFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
             return
         }
+        val valorProva = b.inputValor.text?.toString()
+            ?.trim()
+            ?.replace(',', '.')
+            ?.toDoubleOrNull()
+        if (valorProva == null || valorProva <= 0.0) {
+            b.txtStatus.text = "Informe quanto a prova vale (ex.: 10)."
+            b.inputValor.requestFocus()
+            return
+        }
+        GabaritoStore.saveValor(requireContext(), valorProva)
         val nx = if (b.radioEM.isChecked) 5 else 4
         b.progress.visibility = View.VISIBLE
         b.btnProcessar.isEnabled = false
@@ -137,6 +152,7 @@ class ScanFragment : Fragment() {
             b.txtStatus.text = "Calculando nota..."
             val args = Bundle().apply {
                 putParcelableArrayList(ResultFragment.ARG_ITEMS, ArrayList(items))
+                putDouble(ResultFragment.ARG_VALOR, valorProva)
             }
             (requireActivity() as MainActivity).navigate(
                 ResultFragment().apply { arguments = args }

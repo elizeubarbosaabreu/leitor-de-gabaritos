@@ -6,9 +6,23 @@ import android.content.Context
 object GabaritoStore {
     private const val PREFS = "gabarito"
     private const val KEY_DATA = "data"
+    private const val KEY_VALOR = "valor"
+    const val VALOR_PADRAO = 10.0
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    /** Valor total que a prova vale (em pontos). Padrão: 10. */
+    fun saveValor(context: Context, valor: Double) {
+        prefs(context).edit().putString(KEY_VALOR, valor.toString()).apply()
+    }
+
+    fun loadValor(context: Context): Double {
+        val s = prefs(context).getString(KEY_VALOR, null)
+            ?.replace(',', '.')
+            ?: return VALOR_PADRAO
+        return s.toDoubleOrNull()?.takeIf { it > 0.0 } ?: VALOR_PADRAO
+    }
 
     fun save(context: Context, key: Map<Int, Char>) {
         val data = key.entries.joinToString(";") { "${it.key}:${it.value}" }

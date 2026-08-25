@@ -19,6 +19,7 @@ App Android que lê folhas de respostas (gabaritos) preenchidas à mão por **vi
   - **Ensino Fundamental** → alternativas **A–D** (4 colunas);
   - **Ensino Médio** → alternativas **A–E** (5 colunas).
 - **Correção automática** contra o gabarito oficial (salvo no aparelho) com acertos/erros/brancos e percentual.
+- **Valor da prova configurável**: informe quanto a prova vale (ex.: 10 pontos) e a nota é calculada proporcionalmente ao número de acertos (o valor fica salvo para as próximas correções).
 - **OCR (ML Kit)** para numerar as questões automaticamente a partir dos números impressos na folha.
 - Entrada de imagem por **câmera** ou **galeria**.
 - Resultado com lista questão a questão: resposta do aluno × resposta correta.
@@ -112,9 +113,9 @@ O APK release é gerado em `app/build/outputs/apk/release/app-release.apk`.
 
 1. Instale o APK no aparelho (Android 8.0+, API 26).
 2. Na tela inicial, salve o **gabarito oficial** (ex.: `1C 2A 3D …`).
-3. Em **Ler prova**, selecione o tipo (**Fundamental A–D** ou **Médio A–E**).
+3. Em **Ler prova**, selecione o tipo (**Fundamental A–D** ou **Médio A–E**) e informe **quanto a prova vale** (padrão: 10 pontos).
 4. Fotografe a folha de respostas com boa luz, de frente e enquadrando o quadro de bolhas.
-5. Toque em **Processar e corrigir** — o resultado aparece questão a questão com a nota.
+5. Toque em **Processar e corrigir** — o resultado aparece questão a questão com a nota já na escala escolhida (ex.: 8 acertos em prova de 10 → **8**; prova de 100 → **80**).
 
 Dicas de foto: evite reflexos e sombras; aproxime a câmera do quadro de respostas (a leitura funciona também com a página inteira visível).
 

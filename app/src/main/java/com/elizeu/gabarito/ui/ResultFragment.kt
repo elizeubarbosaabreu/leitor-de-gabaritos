@@ -14,7 +14,9 @@ class ResultFragment : Fragment() {
 
     companion object {
         const val ARG_ITEMS = "items"
+        const val ARG_VALOR = "valor"
         private val LETTERS = "ABCDE"
+        private val LOCALE_BR = java.util.Locale("pt", "BR")
     }
 
     private var _b: FragmentResultBinding? = null
@@ -35,6 +37,10 @@ class ResultFragment : Fragment() {
         val items: List<ItemProva> =
             arguments?.getParcelableArrayList(ARG_ITEMS) ?: emptyList()
         val key = GabaritoStore.load(requireContext())
+        val valor = requireArguments()
+            .getDouble(ARG_VALOR, GabaritoStore.VALOR_PADRAO)
+            .takeIf { it > 0.0 }
+            ?: GabaritoStore.VALOR_PADRAO
 
         var acertos = 0
         var erros = 0
@@ -63,9 +69,10 @@ class ResultFragment : Fragment() {
             }
         }
 
-        b.txtNota.text = "$acertos / $total"
+        val nota = if (total > 0) acertos * valor / total else 0.0
         val pct = if (total > 0) (acertos * 100) / total else 0
-        b.txtPercent.text = "$pct% de acerto"
+        b.txtNota.text = formatNota(nota)
+        b.txtPercent.text = "de ${formatNota(valor)} pontos · $pct% de acerto"
         val parts = ArrayList<String>()
         if (acertos > 0) parts.add("$acertos acertos")
         if (erros > 0) parts.add("$erros erros")
@@ -82,6 +89,9 @@ class ResultFragment : Fragment() {
             )
         }
     }
+
+    private fun formatNota(v: Double): String =
+        String.format(LOCALE_BR, "%.2f", v)
 
     private fun buildList(rows: List<Array<Any?>>) {
         b.listContainer.removeAllViews()
