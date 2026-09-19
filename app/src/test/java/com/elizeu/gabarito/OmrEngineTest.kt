@@ -115,6 +115,18 @@ class OmrEngineTest {
     }
 
     @Test
+    fun readsFortyQuestionSheet() {
+        val n = 40
+        val truth = IntArray(n) { Random(it.toLong() * 11).nextInt(4) }
+        val sheet = makeSheet(n, truth, cols = 4)
+        val read = OmrEngine.readSheetGray(sheet.gray, sheet.w, sheet.h, nx = 4)
+        assertEquals(n, read.rows.size)
+        for (i in 0 until n) {
+            assertEquals("questão ${i + 1}", truth[i], read.answerOf(i))
+        }
+    }
+
+    @Test
     fun readsRotatedNoisySheet() {
         val n = 20
         val truth = IntArray(n) { Random(it.toLong() * 3).nextInt(5) }
