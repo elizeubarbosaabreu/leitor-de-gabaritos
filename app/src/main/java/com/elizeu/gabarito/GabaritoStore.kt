@@ -7,6 +7,7 @@ object GabaritoStore {
     private const val PREFS = "gabarito"
     private const val KEY_DATA = "data"
     private const val KEY_VALOR = "valor"
+    private const val KEY_TIPO = "tipo"
     const val VALOR_PADRAO = 10.0
 
     private fun prefs(context: Context) =
@@ -23,6 +24,13 @@ object GabaritoStore {
             ?: return VALOR_PADRAO
         return s.toDoubleOrNull()?.takeIf { it > 0.0 } ?: VALOR_PADRAO
     }
+
+    fun saveTipo(context: Context, tipo: TipoGabarito) {
+        prefs(context).edit().putString(KEY_TIPO, tipo.name).apply()
+    }
+
+    fun loadTipo(context: Context): TipoGabarito =
+        TipoGabarito.fromId(prefs(context).getString(KEY_TIPO, null))
 
     fun save(context: Context, key: Map<Int, Char>) {
         val data = key.entries.joinToString(";") { "${it.key}:${it.value}" }

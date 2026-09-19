@@ -16,6 +16,7 @@ import com.elizeu.gabarito.GabaritoStore
 import com.elizeu.gabarito.ImageUtils
 import com.elizeu.gabarito.KeyParser
 import com.elizeu.gabarito.R
+import com.elizeu.gabarito.TipoGabarito
 import com.elizeu.gabarito.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,6 +76,7 @@ class HomeFragment : Fragment() {
             return
         }
         GabaritoStore.save(requireContext(), key)
+        GabaritoStore.saveTipo(requireContext(), TipoGabarito.fromKey(key))
         status("Gabarito salvo (${key.size} questões).", isError = false)
         refreshKey()
     }

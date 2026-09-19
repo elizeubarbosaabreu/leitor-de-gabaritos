@@ -15,9 +15,9 @@ App Android que lê folhas de respostas (gabaritos) preenchidas à mão por **vi
 ## Funcionalidades
 
 - **Leitura OMR de bolhas** com detecção robusta de grade (10 questões, sem depender de marcas de calibração).
-- **Dois tipos de gabarito**, selecionáveis na tela de leitura:
-  - **Ensino Fundamental** → alternativas **A–D** (4 colunas);
-  - **Ensino Médio** → alternativas **A–E** (5 colunas).
+- **Dois tipos de gabarito**, selecionáveis na tela de leitura e aceitando até **40 questões**:
+  - **Gabarito A–D** → alternativas **A–D** (4 colunas);
+  - **Gabarito A–E** → alternativas **A–E** (5 colunas).
 - **Correção automática** contra o gabarito oficial (salvo no aparelho) com acertos/erros/brancos e percentual.
 - **Valor da prova configurável**: informe quanto a prova vale (ex.: 10 pontos) e a nota é calculada proporcionalmente ao número de acertos (o valor fica salvo para as próximas correções).
 - **OCR (ML Kit)** para numerar as questões automaticamente a partir dos números impressos na folha.
@@ -35,6 +35,8 @@ Os gabaritos oficiais usados na calibração estão em [`modelos/`](modelos/):
 |---|---|---|
 | `modelos/GABARITO FUNDAMENTAL.png` | Ensino Fundamental | A – D (4 colunas) |
 | `modelos/GABARITO MEDIO.png` | Ensino Médio | A – E (5 colunas) |
+| `modelos/gabarito-a-d.jpg` | Gabarito A–D | A – D (4 colunas, até 40 questões) |
+| `modelos/gabarito-a-e.jpg` | Gabarito A–E | A – E (5 colunas, até 40 questões) |
 
 Ambos contêm o quadro de respostas com **10 questões** (linhas) e bolhas circulares. No modelo Fundamental, a quinta coluna física é apenas uma barra de referência (não é uma alternativa), por isso o leitor usa 4 colunas para esse nível.
 
@@ -113,7 +115,7 @@ O APK release é gerado em `app/build/outputs/apk/release/app-release.apk`.
 
 1. Instale o APK no aparelho (Android 8.0+, API 26).
 2. Na tela inicial, salve o **gabarito oficial** (ex.: `1C 2A 3D …`).
-3. Em **Ler prova**, selecione o tipo (**Fundamental A–D** ou **Médio A–E**) e informe **quanto a prova vale** (padrão: 10 pontos).
+3. Em **Ler prova**, selecione o tipo (**Gabarito A–D** ou **Gabarito A–E**) e informe **quanto a prova vale** (padrão: 10 pontos).
 4. Fotografe a folha de respostas com boa luz, de frente e enquadrando o quadro de bolhas.
 5. Toque em **Processar e corrigir** — o resultado aparece questão a questão com a nota já na escala escolhida (ex.: 8 acertos em prova de 10 → **8**; prova de 100 → **80**).
 
@@ -143,6 +145,29 @@ Dicas de foto: evite reflexos e sombras; aproxime a câmera do quadro de respost
 - Material Design 3 (Material Components)
 - Google ML Kit (reconhecimento de texto — latin)
 - Gradle 8.7 / AGP 8.4.2
+
+---
+
+## Gerador de Provas e Atividades com Gabarito
+
+Além do leitor de gabaritos, o Prof. Elizeu Barbosa mantém um gerador online de provas e atividades:
+
+- **Acessar:** https://elizeubarbosa.com.br/ferramentas/gerador-de-provas.html
+- **Recursos:**
+  - Criação de questões com alternativas (A–E), V/F, dissertativas e com imagens
+  - Gabarito compacto no canto da prova ou folha de gabarito separada com bolhas para o aluno preencher
+  - Inclusão de cabeçalho da escola (logo, nome, ano)
+  - Impressão em formato A4
+  - Exportação para PDF e Word (.docx)
+  - Modelos para Ensino Fundamental (A–D) e Médio (A–E)
+  - Até 40 questões por prova
+
+- **Outras ferramentas disponíveis:**
+  - Gerador de Caça-Palavras (https://elizeubarbosa.com.br/ferramentas/gerador-cacapalavras.html)
+  - Gerador de Cruzadinhas (https://elizeubarbosa.com.br/ferramentas/gerador-cruzadinhas.html)
+  - Gerador de Apresentação Sozi
+
+A ferramenta complementa este leitor de gabaritos: o professor pode gerar a prova e o gabarito online, imprimir em A4, e depois utilizar este app para corrigir as folhas fotografadas pelos alunos.
 
 ## Licença
 

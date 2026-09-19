@@ -3,4 +3,8 @@
     <string name="title_gabarito">Gabarito oficial</string>
     <string name="title_scan">Ler prova</string>
     <string name="title_result">Resultado</string>
+    <string name="tipo_gabarito_afd">Gabarito A-D (40 q)</string>
+    <string name="tipo_gabarite_ae">Gabarito A-E</string>
+    <string name="gabarito_a_d_key">1d, 2a, 3c, 4b, 5a, 6d, 7a, 8b</string>
+    <string name="gabarito_a_e_key">1e, 2a, 3d, 4b, 5c, 6a, 7e, 8c, 9c, 10e</string>
 </resources>

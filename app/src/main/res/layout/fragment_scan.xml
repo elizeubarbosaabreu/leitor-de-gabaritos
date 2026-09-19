@@ -37,7 +37,7 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <RadioGroup
+<RadioGroup
             android:id="@+id/radioEnsino"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,6 +59,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Médio (A–E)" />
+
+            <RadioButton
+                android:id="@+id/radioAD"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="gabarito-a-d" />
+
+            <RadioButton
+                android:id="@+id/radioAE"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="gabarito-a-e" />
         </RadioGroup>
 
         <TextView
