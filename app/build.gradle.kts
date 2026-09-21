@@ -9,7 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.elizeu.gabarito"
+        applicationId = "com.elizeu.gabarito.v2"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:startColor="#FF6B35"
+                android:endColor="#F7931E"
+                android:type="linear" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+    <item android:left="16dp" android:right="16dp" android:top="16dp" android:bottom="16dp">
+        <layer-list>
+            <item android:gravity="center_vertical" android:width="60dp" android:height="60dp">
+                <bitmap android:src="@mipmap/ic_launcher" android:gravity="center" />
+            </item>
+            <item android:gravity="center" android:left="70dp">
+                <layer-list>
+                    <item>
+                        <shape android:shape="rectangle">
+                            <solid android:color="#FFFFFF" />
+                            <corners android:radius="8dp" />
+                        </shape>
+                    </item>
+                    <item android:left="12dp" android:right="12dp" android:top="8dp" android:bottom="8dp">
+                        <text android:text="🎯 Crie suas provas online!" android:textColor="#FF6B35" android:textSize="18sp" android:textStyle="bold" android:gravity="center" />
+                    </item>
+                </layer-list>
+            </item>
+        </layer-list>
+    </item>
+</layer-list>
