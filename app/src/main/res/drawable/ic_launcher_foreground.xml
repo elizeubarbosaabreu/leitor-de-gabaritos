@@ -4,11 +4,42 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Document/clipboard background -->
     <path
-        android:pathData="M30,58 L46,72 L78,38"
+        android:fillColor="#1E88E5"
+        android:pathData="M22,18 L86,18 C92.07,18 97,22.93 97,29 L97,79 C97,85.07 92.07,90 86,90 L22,90 C15.93,90 11,85.07 11,79 L11,29 C11,22.93 15.93,18 22,18 Z" />
+
+    <!-- Document inner area (lighter) -->
+    <path
+        android:fillColor="#42A5F5"
+        android:pathData="M28,26 L80,26 C83.31,26 86,28.69 86,32 L86,72 C86,75.31 83.31,78 80,78 L28,78 C24.69,78 22,75.31 22,72 L22,32 C22,28.69 24.69,26 28,26 Z" />
+
+    <!-- Checkmark -->
+    <path
+        android:pathData="M36,54 L48,66 L72,36"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="12"
+        android:strokeWidth="8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
+
+    <!-- Small bubbles representing answer sheet -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M36,38 A6,6 0 1,1 36,50 A6,6 0 1,1 36,38" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M48,38 A6,6 0 1,1 48,50 A6,6 0 1,1 48,38" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M60,38 A6,6 0 1,1 60,50 A6,6 0 1,1 60,38" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M72,38 A6,6 0 1,1 72,50 A6,6 0 1,1 72,38" />
+
 </vector>

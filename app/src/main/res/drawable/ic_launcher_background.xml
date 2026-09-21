@@ -4,16 +4,9 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="135"
-                android:startColor="#FF6B35"
-                android:endColor="#F7931E"
+                android:startColor="#1E88E5"
+                android:endColor="#1565C0"
                 android:type="linear" />
         </shape>
-    </item>
-    <!-- Subtle pattern overlay -->
-    <item>
-        <bitmap
-            android:antialias="true"
-            android:gravity="center"
-            android:src="@drawable/ic_launcher_background_pattern" />
     </item>
 </layer-list>
