@@ -46,11 +46,25 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radioAD"
+                android:id="@+id/radioEF"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="true"
+                android:text="Fundamental (A–D)" />
+
+            <RadioButton
+                android:id="@+id/radioEM"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Médio (A–E)" />
+
+            <RadioButton
+                android:id="@+id/radioAD"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="gabarito-a-d" />
 
             <RadioButton

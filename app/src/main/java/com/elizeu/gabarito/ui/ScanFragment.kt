@@ -81,8 +81,6 @@ class ScanFragment : Fragment() {
             TipoGabarito.A_D -> b.radioAD.isChecked = true
             TipoGabarito.A_E -> b.radioAE.isChecked = true
         }
-        b.radioAD.setOnClickListener { GabaritoStore.saveTipo(requireContext(), TipoGabarito.A_D) }
-        b.radioAE.setOnClickListener { GabaritoStore.saveTipo(requireContext(), TipoGabarito.A_E) }
     }
 
     private fun onUriReady(uri: Uri) {
@@ -118,6 +116,10 @@ class ScanFragment : Fragment() {
         when (tipo) {
             TipoGabarito.A_D -> b.radioAD.isChecked = true
             TipoGabarito.A_E -> b.radioAE.isChecked = true
+            else -> {
+                if (b.radioAD.isChecked) b.radioAD.isChecked = false
+                if (b.radioAE.isChecked) b.radioAE.isChecked = false
+            }
         }
     }
 
