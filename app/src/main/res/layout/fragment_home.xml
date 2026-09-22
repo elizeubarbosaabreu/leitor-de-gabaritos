@@ -30,6 +30,19 @@
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
+        <ImageView
+            android:id="@+id/bannerGeradorProvas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/banner_gerador_provas"
+            android:contentDescription="Gerador de Provas"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

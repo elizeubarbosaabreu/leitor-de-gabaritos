@@ -58,6 +58,13 @@ class HomeFragment : Fragment() {
         b.btnCorrigir.setOnClickListener {
             (requireActivity() as com.elizeu.gabarito.MainActivity).navigate(ScanFragment())
         }
+        b.bannerGeradorProvas.setOnClickListener { openGeradorProvas() }
+    }
+
+    private fun openGeradorProvas() {
+        val url = "https://elizeubarbosa.com.br/ferramentas/gerador-de-provas.html"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
     }
 
     private fun refreshKey() {
