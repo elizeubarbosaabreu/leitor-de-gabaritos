@@ -38,10 +38,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:src="@drawable/banner_gerador_provas"
-            android:contentDescription="Gerador de Provas"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground" />
+            android:contentDescription="Gerador de Provas" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -151,16 +148,5 @@
                     android:text="Ler prova e corrigir" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/txtGeradorProvas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:text="Crie suas provas em: elizeubarbosa.com.br/ferramentas/gerador-de-provas.html"
-            android:textColor="@color/secondary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
     </LinearLayout>
 </ScrollView>
