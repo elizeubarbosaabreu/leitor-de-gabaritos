@@ -30,6 +30,16 @@
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
+        <ImageView
+            android:id="@+id/bannerAd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:contentDescription="Banner promocional"
+            android:src="@drawable/banner_gerador_provas" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -104,6 +114,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp">
 
@@ -138,5 +149,20 @@
                     android:text="Ler prova e corrigir" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGeradorProvas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Criar provas no Gerador de Provas"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/secondary"
+            app:cornerRadius="24dp"
+            app:icon="@drawable/ic_launcher_foreground"
+            app:iconGravity="start"
+            app:iconPadding="12dp"
+            app:iconSize="24dp" />
     </LinearLayout>
 </ScrollView>
