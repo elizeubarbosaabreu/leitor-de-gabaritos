@@ -3,9 +3,9 @@
 App Android que lê folhas de respostas (gabaritos) preenchidas à mão por **visão computacional (OMR)** — sem precisar de scanner ou marcador de caixa — e corrige a prova automaticamente, informando nota e detalhamento questão a questão.
 
 <p align="center">
-  <img src="modelos/GABARITO FUNDAMENTAL.png" alt="Modelo de gabarito – Ensino Fundamental (A–D)" width="220"/>
+  <img src="modelos/gabarito-a-d.jpg" alt="Modelo de gabarito A–D (4 alternativas)" width="220"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="modelos/GABARITO MEDIO.png" alt="Modelo de gabarito – Ensino Médio (A–E)" width="220"/>
+  <img src="modelos/gabarito-a-e.jpg" alt="Modelo de gabarito A–E (5 alternativas)" width="220"/>
 </p>
 
 > Calibrado e validado com **fotos reais de gabarito** (câmera de celular, tinta azul, close-up e página inteira) além de folhas sintéticas com rotação, perspectiva e ruído.
@@ -33,12 +33,10 @@ Os gabaritos oficiais usados na calibração estão em [`modelos/`](modelos/):
 
 | Arquivo | Nível | Alternativas |
 |---|---|---|
-| `modelos/GABARITO FUNDAMENTAL.png` | Ensino Fundamental | A – D (4 colunas) |
-| `modelos/GABARITO MEDIO.png` | Ensino Médio | A – E (5 colunas) |
 | `modelos/gabarito-a-d.jpg` | Gabarito A–D | A – D (4 colunas, até 40 questões) |
 | `modelos/gabarito-a-e.jpg` | Gabarito A–E | A – E (5 colunas, até 40 questões) |
 
-Ambos contêm o quadro de respostas com **10 questões** (linhas) e bolhas circulares. No modelo Fundamental, a quinta coluna física é apenas uma barra de referência (não é uma alternativa), por isso o leitor usa 4 colunas para esse nível.
+Ambos contêm o quadro de respostas com **10 questões** (linhas) e bolhas circulares.
 
 ---
 
@@ -65,9 +63,9 @@ O motor OMR fica em `app/src/main/java/com/elizeu/gabarito/OmrEngine.kt` e foi p
 
 ```
 .
-├── modelos/                        # Gabaritos oficiais (PNG)
-│   ├── GABARITO FUNDAMENTAL.png
-│   └── GABARITO MEDIO.png
+├── modelos/                        # Gabaritos oficiais
+│   ├── gabarito-a-d.jpg
+│   └── gabarito-a-e.jpg
 ├── app/
 │   ├── build.gradle.kts
 │   └── src/
