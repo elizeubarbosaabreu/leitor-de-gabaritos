@@ -13,8 +13,8 @@ android {
         applicationId = "com.elizeu.gabarito.v3"
         minSdk = 21
         targetSdk = 34
-        versionCode = 5
-        versionName = "3.2"
+        versionCode = 4
+        versionName = "3.1"
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }

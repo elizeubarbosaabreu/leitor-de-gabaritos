@@ -20,6 +20,17 @@ import android.graphics.Color
  */
 object OmrEngine {
 
+    data class Blob(
+        val cx: Float,
+        val cy: Float,
+        val x: Int,
+        val y: Int,
+        val w: Int,
+        val h: Int,
+        val area: Int,
+        val dim: Int
+    )
+
     data class RowFilled(val cy: Float, val fills: FloatArray)
 
     data class SheetRead(
@@ -162,30 +173,13 @@ object OmrEngine {
         return Pair(out, count)
     }
 
-    /** Componente com perímetro (usado p/ classificar formas dos marcadores). */
-    data class Comp(
-        val cx: Float,
-        val cy: Float,
-        val x: Int,
-        val y: Int,
-        val w: Int,
-        val h: Int,
-        val area: Int,
-        val perimetro: Int
-    )
-
-    /**
-     * Como [componentStats], mas SEM filtro de aspecto e com o perímetro
-     * (contagem de pixels de tinta com vizinho de fundo). Serve à detecção
-     * dos marcadores fiduciais, que precisam distinguir quadrado/círculo/triângulo.
-     */
-    fun componentStatsFull(lab: IntArray, nc: Int, w: Int, h: Int, minArea: Int = 4): List<Comp> {
+    /** Estatísticas dos componentes (bbox, área, centro), filtrados por aspect <= 2. */
+    private fun componentStats(lab: IntArray, nc: Int, w: Int, h: Int, minArea: Int = 4): List<Blob> {
         val xs = IntArray(nc + 1) { w }
         val xe = IntArray(nc + 1) { -1 }
         val ys = IntArray(nc + 1) { h }
         val ye = IntArray(nc + 1) { -1 }
         val area = IntArray(nc + 1)
-        val per = IntArray(nc + 1)
         for (y in 0 until h) {
             for (x in 0 until w) {
                 val v = lab[y * w + x]
@@ -195,130 +189,182 @@ object OmrEngine {
                 if (x > xe[v]) xe[v] = x
                 if (y < ys[v]) ys[v] = y
                 if (y > ye[v]) ye[v] = y
-                if (x == 0 || y == 0 || x == w - 1 || y == h - 1) {
-                    per[v]++
-                } else if (lab[y * w + x - 1] == 0 || lab[y * w + x + 1] == 0 ||
-                    lab[(y - 1) * w + x] == 0 || lab[(y + 1) * w + x] == 0
-                ) {
-                    per[v]++
-                }
             }
         }
-        val list = ArrayList<Comp>()
+        val list = ArrayList<Blob>()
         for (c in 1..nc) {
             if (area[c] < minArea) continue
             val ww = xe[c] - xs[c] + 1
             val hh = ye[c] - ys[c] + 1
+            val dim = maxOf(ww, hh)
+            val asp = dim.toFloat() / maxOf(1, minOf(ww, hh))
+            if (asp > 2.0f) continue
             list.add(
-                Comp(
+                Blob(
                     cx = (xs[c] + xe[c]) / 2f,
                     cy = (ys[c] + ye[c]) / 2f,
-                    x = xs[c], y = ys[c], w = ww, h = hh,
-                    area = area[c], perimetro = per[c]
+                    x = xs[c], y = ys[c], w = ww, h = hh, area = area[c], dim = dim
                 )
             )
         }
         return list
     }
 
-    /**
-     * Leitura pelo formato NOVO (marcadores de canto): normaliza a foto por
-     * homografia e amostra as bolhas pela geometria canônica (GeometriaFolha).
-     * Robusto a rotação e perspectiva; as posições de retorno vêm convertidas
-     * para o espaço da imagem original (o Corretor usa cy/cols para o OCR dos
-     * números das questões).
-     *
-     * @param quad cantos identificados por [MarcadorFiducial]
-     * @param linhas nº de questões (se <= 0, estimado pela altura do quadro)
-     */
-    fun readSheetComMarcadores(
-        gray: IntArray,
-        w: Int,
-        h: Int,
-        quad: MarcadorFiducial.Quadro,
-        nx: Int = 5,
-        linhas: Int = -1
-    ): SheetRead {
-        val nxC = nx.coerceIn(2, 6)
-        val wmm = GeometriaFolha.larguraMm(nxC)
-        // Escala px/mm: a distância TL↔TR corresponde a (Wmm - 2*offsetMarca) mm.
-        val refMm = wmm - 2f * GeometriaFolha.MM_OFFSET_MARCA
-        val escala = dist(quad.tl.cx, quad.tl.cy, quad.tr.cx, quad.tr.cy) / refMm
-        if (escala < 0.5f) return emptyRead(nxC)
-        val n = if (linhas > 0) linhas
-        else GeometriaFolha.estimarLinhas(dist(quad.tl.cx, quad.tl.cy, quad.bl.cx, quad.bl.cy), escala)
-        if (n < 1) return emptyRead(nxC)
-        val hmm = GeometriaFolha.alturaMm(n)
-        val outW = Math.round(wmm * escala).coerceAtLeast(50)
-        val outH = Math.round(hmm * escala).coerceAtLeast(50)
+    private class Cluster1D(val means: FloatArray, val counts: IntArray)
 
-        val src = arrayOf(
-            Pair(quad.tl.cx, quad.tl.cy), Pair(quad.tr.cx, quad.tr.cy),
-            Pair(quad.bl.cx, quad.bl.cy), Pair(quad.br.cx, quad.br.cy)
-        )
-        val dst = arrayOf(
-            Pair(GeometriaFolha.MM_OFFSET_MARCA * escala, GeometriaFolha.MM_OFFSET_MARCA * escala),
-            Pair((wmm - GeometriaFolha.MM_OFFSET_MARCA) * escala, GeometriaFolha.MM_OFFSET_MARCA * escala),
-            Pair(GeometriaFolha.MM_OFFSET_MARCA * escala, (hmm - GeometriaFolha.MM_OFFSET_MARCA) * escala),
-            Pair((wmm - GeometriaFolha.MM_OFFSET_MARCA) * escala, (hmm - GeometriaFolha.MM_OFFSET_MARCA) * escala)
-        )
-        val hm = Homografia.computar(src, dst) ?: return emptyRead(nxC)
-        val warped = Homografia.warp(gray, w, h, hm, outW, outH)
+    private fun cluster1D(vals: FloatArray, tol: Float): Cluster1D {
+        val sortedVals = vals.sorted()
+        val means = ArrayList<Float>()
+        val counts = ArrayList<Int>()
+        for (v in sortedVals) {
+            if (means.isNotEmpty() && Math.abs(v - means.last()) <= tol) {
+                val n = counts[counts.size - 1] + 1
+                counts[counts.size - 1] = n
+                means[means.size - 1] = means.last() + (v - means.last()) / n
+            } else {
+                means.add(v)
+                counts.add(1)
+            }
+        }
+        return Cluster1D(means.toFloatArray(), counts.toIntArray())
+    }
 
-        val rAmo = GeometriaFolha.MM_RAIO_BOLHA * escala * 0.70f
-        val fills = Array(n) { FloatArray(nxC) }
-        for (i in 0 until n) {
-            val cy = GeometriaFolha.cyLinha(i) * escala
-            for (j in 0 until nxC) {
-                val cx = GeometriaFolha.cxColuna(j) * escala
-                fills[i][j] = tintaNoDisco(warped, outW, outH, cx, cy, rAmo)
+    /** Lê as respostas de um bitmap (nx = número de alternativas: EF=4, EM=5). */
+    fun readSheet(bmp: Bitmap, nx: Int = 5): SheetRead {
+        return readSheetGray(toGray(bmp), bmp.width, bmp.height, nx)
+    }
+
+    /** Versão pura (JVM-testável) que opera em array de cinza. */
+    fun readSheetGray(gray: IntArray, w: Int, h: Int, nx: Int = 5): SheetRead {
+        val ink = bradleyThreshold(gray, w, h)
+        val (lab, nc) = connectedComponents(ink, w, h)
+        val comps = componentStats(lab, nc, w, h)
+        if (comps.isEmpty()) return emptyRead(nx)
+
+        val base = minOf(w, h).toFloat()
+        val nxC = nx.coerceIn(2, 5)
+        val factors = floatArrayOf(0.035f, 0.024f, 0.016f, 0.010f, 0.007f)
+
+        var bestCols = FloatArray(0)
+        var bestRows = FloatArray(0)
+        var bestMed = 0f
+        var bestCov = 0f
+
+        for (factor in factors) {
+            val thr = factor * base
+            val big = ArrayList<Blob>(comps.size)
+            for (c in comps) {
+                if (c.dim >= thr && c.dim <= 0.5f * base) big.add(c)
+            }
+            if (big.size < 15) continue
+            val dims = IntArray(big.size) { big[it].dim }
+            dims.sort()
+            val med = dims[dims.size / 2].toFloat()
+            val band = ArrayList<Blob>(big.size)
+            for (c in big) {
+                if (c.dim >= 0.55f * med && c.dim <= 1.8f * med) band.add(c)
+            }
+            if (band.size < 20) continue
+
+            val xg = cluster1D(FloatArray(band.size) { band[it].cx }, 0.5f * med)
+            val xOrder = xg.means.indices.sortedByDescending { xg.counts[it] }
+            if (xOrder.size < nxC) continue
+            val cols = FloatArray(nxC) { xg.means[xOrder[it]] }
+            cols.sort()
+
+            val yg = cluster1D(FloatArray(band.size) { band[it].cy }, 0.4f * med)
+            val mincov = maxOf(2, nxC - 1)
+            val cands = ArrayList<Float>()
+            for (k in yg.means.indices) {
+                val ry = yg.means[k]
+                var cov = 0
+                for (rx in cols) {
+                    var hit = false
+                    for (c in band) {
+                        if (Math.abs(c.cx - rx) <= 0.45f * med && Math.abs(c.cy - ry) <= 0.45f * med) {
+                            hit = true
+                            break
+                        }
+                    }
+                    if (hit) cov++
+                }
+                if (cov >= mincov) cands.add(ry)
+            }
+            if (cands.size < 3) continue
+            cands.sort()
+
+            var pitch = med
+            if (cands.size > 1) {
+                val diffs = FloatArray(cands.size - 1) { cands[it + 1] - cands[it] }
+                diffs.sort()
+                pitch = diffs[diffs.size / 2]
+                if (pitch < 0.5f * med) pitch = med
+            }
+            val rows = ArrayList<Float>()
+            for (ry in cands) {
+                if (rows.isNotEmpty() && ry - rows[rows.size - 1] < 0.4f * pitch) continue
+                rows.add(ry)
+            }
+            if (rows.size < 3) continue
+
+            var cells = 0
+            for (ry in rows) {
+                for (rx in cols) {
+                    var hit = false
+                    for (c in band) {
+                        if (Math.abs(c.cx - rx) <= 0.45f * med && Math.abs(c.cy - ry) <= 0.45f * med) {
+                            hit = true
+                            break
+                        }
+                    }
+                    if (hit) cells++
+                }
+            }
+            val cov = cells.toFloat() / (rows.size * nxC)
+            if (cov >= 0.8f) {
+                bestCols = cols
+                bestRows = rows.toFloatArray()
+                bestMed = med
+                bestCov = cov
+                break
             }
         }
 
-        val todas = fills.flatMap { it.toList() }.sorted()
-        val med = todas[todas.size / 2]
-        val threshold = (1.7f * med).coerceIn(0.35f, 0.55f)
+        if (bestRows.isEmpty()) return emptyRead(nxC)
 
-        val rowsOut = ArrayList<RowFilled>(n)
-        for (i in 0 until n) {
-            val cyCanon = GeometriaFolha.cyLinha(i) * escala
-            val p = Homografia.mapear(hm, GeometriaFolha.cxColuna(0) * escala, cyCanon)
-            rowsOut.add(RowFilled(p.second, fills[i]))
-        }
-        val cols = FloatArray(nxC) { j ->
-            val p = Homografia.mapear(hm, GeometriaFolha.cxColuna(j) * escala, 16f * escala)
-            p.first
-        }
-        return SheetRead(rowsOut, cols, nxC, 1f, threshold)
-    }
-
-    /** Fração de pixels escuros dentro de um disco (interior da bolha). */
-    private fun tintaNoDisco(g: IntArray, w: Int, h: Int, cx: Float, cy: Float, r: Float): Float {
-        if (r < 1f) return 0f
-        val x0 = (cx - r).toInt().coerceAtLeast(0)
-        val x1 = (cx + r).toInt().coerceAtMost(w - 1)
-        val y0 = (cy - r).toInt().coerceAtLeast(0)
-        val y1 = (cy + r).toInt().coerceAtMost(h - 1)
-        var total = 0
-        var ink = 0
-        val r2 = r * r
-        for (y in y0..y1) {
-            for (x in x0..x1) {
-                val dx = x + 0.5f - cx
-                val dy = y + 0.5f - cy
-                if (dx * dx + dy * dy <= r2) {
-                    total++
-                    if (g[y * w + x] < 120) ink++
+        // Preenchimento: maior área de componente dentro de hw do centro da célula
+        val hw = 0.45f * bestMed
+        val nRow = bestRows.size
+        val mat = FloatArray(nRow * nxC)
+        for (c in comps) {
+            for (ri in 0 until nRow) {
+                if (Math.abs(c.cy - bestRows[ri]) > hw) continue
+                for (ci in 0 until nxC) {
+                    if (Math.abs(c.cx - bestCols[ci]) <= hw && c.area > mat[ri * nxC + ci]) {
+                        mat[ri * nxC + ci] = c.area.toFloat()
+                    }
                 }
             }
         }
-        return if (total == 0) 0f else ink.toFloat() / total
-    }
 
-    private fun dist(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val dx = x2 - x1
-        val dy = y2 - y1
-        return kotlin.math.sqrt(dx * dx + dy * dy)
+        val sortedMat = mat.copyOf()
+        sortedMat.sort()
+        val medCell = sortedMat[sortedMat.size / 2]
+        val thrFill = 1.7f * medCell
+        var maxMat = 0f
+        for (v in mat) if (v > maxMat) maxMat = v
+        if (maxMat <= 0f) maxMat = 1f
+        val normThreshold = thrFill / maxMat
+
+        val rowsOut = ArrayList<RowFilled>(nRow)
+        for (ri in 0 until nRow) {
+            val fills = FloatArray(nxC)
+            for (ci in 0 until nxC) {
+                fills[ci] = mat[ri * nxC + ci] / maxMat
+            }
+            rowsOut.add(RowFilled(bestRows[ri], fills))
+        }
+        return SheetRead(rowsOut, bestCols, nxC, bestCov, normThreshold)
     }
 
     private fun emptyRead(nx: Int): SheetRead =

@@ -39,7 +39,7 @@ object Corretor {
     /** Corrige uma prova fotografada: retorna itens por questão.
      *  nx = número de alternativas (EF=4, EM=5). */
     suspend fun corrigir(bmp: Bitmap, nx: Int = 5): List<ItemProva> = withContext(Dispatchers.Default) {
-        val read = lerFolha(bmp, nx)
+        val read = OmrEngine.readSheet(bmp, nx)
         val cols = read.cols
         val rows = read.rows
         if (rows.isEmpty()) return@withContext emptyList()
@@ -88,23 +88,6 @@ object Corretor {
                 resposta = read.answerOf(i),
                 fills = rows[i].fills.copyOf()
             )
-        }
-    }
-
-    /**
-     * Lê a folha de respostas pelo formato único (4 marcadores de canto):
-     * a foto é normalizada por homografia e as bolhas, lidas pela geometria
-     * canônica — imune a rotação e perspectiva. Sem os marcadores, devolve
-     * leitura vazia (a interface avisa que não encontrou o quadro).
-     */
-    fun lerFolha(bmp: Bitmap, nx: Int = 5): OmrEngine.SheetRead {
-        return try {
-            val gray = OmrEngine.toGray(bmp)
-            val quad = MarcadorFiducial.detectar(gray, bmp.width, bmp.height)
-                ?: return OmrEngine.SheetRead(emptyList(), FloatArray(0), nx, 0f, 0f)
-            OmrEngine.readSheetComMarcadores(gray, bmp.width, bmp.height, quad, nx)
-        } catch (_: Exception) {
-            OmrEngine.SheetRead(emptyList(), FloatArray(0), nx, 0f, 0f)
         }
     }
 
