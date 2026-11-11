@@ -9,12 +9,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        // Mantido .v3 para instalar por cima da versão 3.0 já distribuída.
-        applicationId = "com.elizeu.gabarito.v3"
+        applicationId = "com.elizeu.gabarito.v2"
         minSdk = 21
         targetSdk = 34
-        versionCode = 4
-        versionName = "3.1"
+        versionCode = 3
+        versionName = "2.1"
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
