@@ -2,19 +2,17 @@
 
 App Android que lê folhas de respostas (gabaritos) preenchidas à mão por **visão computacional (OMR)** — sem precisar de scanner ou marcador de caixa — e corrige a prova automaticamente, informando nota e detalhamento questão a questão.
 
-<p align="center">
-  <img src="modelos/gabarito-a-d.jpg" alt="Modelo de gabarito A–D (4 alternativas)" width="220"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="modelos/gabarito-a-e.jpg" alt="Modelo de gabarito A–E (5 alternativas)" width="220"/>
-</p>
+O gabarito é gerado pelo **Gerador de Provas** (https://elizeubarbosa.com.br/ferramentas/gerador-de-provas.html):
+quadro com números, bolhas Ⓐ–Ⓔ e **4 marcas de referência nos cantos**
+(□ quadrado · ○ círculo · △ triângulo · □ quadrado) que ancoram a leitura.
 
-> Calibrado e validado com **fotos reais de gabarito** (câmera de celular, tinta azul, close-up e página inteira) além de folhas sintéticas com rotação, perspectiva e ruído.
+> Validado com **folhas sintéticas** na geometria canônica exata: 10/20 questões, EM (5 colunas) e EF (4), rotação de 3°, perspectiva, folha toda preenchida e folha em branco. Teste no celular com uma folha impressa pelo gerador antes de usar em sala.
 
 ---
 
 ## Funcionalidades
 
-- **Leitura OMR de bolhas** com detecção robusta de grade (10 questões, sem depender de marcas de calibração).
+- **Leitura OMR de bolhas** por **marcadores de canto** (4 marcas impressas: quadrado, círculo, triângulo, quadrado): a foto é normalizada por homografia e as bolhas são lidas pela geometria fixa — imune a rotação e perspectiva.
 - **Dois tipos de gabarito**, selecionáveis na tela de leitura e aceitando até **40 questões**:
   - **Gabarito A–D** → alternativas **A–D** (4 colunas);
   - **Gabarito A–E** → alternativas **A–E** (5 colunas).
@@ -27,16 +25,22 @@ App Android que lê folhas de respostas (gabaritos) preenchidas à mão por **vi
 
 ---
 
-## Modelos de gabarito
+## Marcadores de canto (formato novo)
 
-Os gabaritos oficiais usados na calibração estão em [`modelos/`](modelos/):
+A folha de bolhas tem 4 marcas sólidas de 6×6 mm nos cantos, com 2,5 mm de
+folga da moldura (quiet zone) — por isso nenhuma bolha pintada se confunde
+com elas:
 
-| Arquivo | Nível | Alternativas |
+| Canto | Forma | Posição |
 |---|---|---|
-| `modelos/gabarito-a-d.jpg` | Gabarito A–D | A – D (4 colunas, até 40 questões) |
-| `modelos/gabarito-a-e.jpg` | Gabarito A–E | A – E (5 colunas, até 40 questões) |
+| TL (topo-esquerda) | quadrado | centro a 5,5 mm das bordas |
+| TR (topo-direita) | círculo | ídem |
+| BL (base-esquerda) | triângulo (base no topo) | ídem |
+| BR (base-direita) | quadrado | ídem |
 
-Ambos contêm o quadro de respostas com **10 questões** (linhas) e bolhas circulares.
+Formas distintas identificam cada canto (e a rotação da foto). A geometria
+canônica em mm vive em `GeometriaFolha.kt` (app) e no comentário do CSS do
+gerador — **os dois lados precisam ser alterados juntos**.
 
 ---
 
@@ -63,9 +67,6 @@ O motor OMR fica em `app/src/main/java/com/elizeu/gabarito/OmrEngine.kt` e foi p
 
 ```
 .
-├── modelos/                        # Gabaritos oficiais
-│   ├── gabarito-a-d.jpg
-│   └── gabarito-a-e.jpg
 ├── app/
 │   ├── build.gradle.kts
 │   └── src/
@@ -78,9 +79,7 @@ O motor OMR fica em `app/src/main/java/com/elizeu/gabarito/OmrEngine.kt` e foi p
 │       │   └── ui/                 # Fragments (Home, Scan, Result)
 │       ├── res/                    # Layouts, strings, temas
 │       └── test/java/com/elizeu/gabarito/
-│           ├── OmrEngineTest.kt    # Testes sintéticos
-│           └── RealPhotoTest.kt    # Testes com fotos reais
-├── build.gradle.kts
+│           └── MarcadorTest.kt     # Formato novo (geometria canônica)
 ├── settings.gradle.kts
 ├── gradlew                          # Gradle wrapper
 └── README.md
@@ -129,11 +128,7 @@ Dicas de foto: evite reflexos e sombras; aproxime a câmera do quadro de respost
 
 | Teste | Cobre |
 |---|---|
-| `OmrEngineTest.readsCleanSheetEM` | Folha sintética EM, 20 questões, 5 colunas |
-| `OmrEngineTest.readsCleanSheetEF` | Folha sintética EF, 10 questões, 4 colunas |
-| `OmrEngineTest.readsRotatedNoisySheet` | Folha rotacionada 2° + ruído |
-| `OmrEngineTest.blankSheetYieldsNoAnswers` | Folha em branco → nenhuma resposta |
-| `RealPhotoTest.readsAllRealPhotos` | 4 fotos reais (EF/EM, close-up e página inteira) → 10/10 |
+| `MarcadorTest.*` | Formato novo (sintético, geometria canônica): limpo, 20 questões todas pintadas, rotação 3°, perspectiva, folha em branco e detecção das formas dos cantos |
 
 ---
 
